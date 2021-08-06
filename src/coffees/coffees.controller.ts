@@ -4,10 +4,13 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
+import { Protocol } from 'src/common/decorators/protocol.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
@@ -17,13 +20,19 @@ import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 export class CoffeesController {
   constructor(private readonly coffeesService: CoffeesService) {}
 
+  @Public()
   @Get()
-  getAll(@Query() paginationQueryDto: PaginationQueryDto) {
+  getAll(
+    @Protocol('https') protocol: string,
+    @Query() paginationQueryDto: PaginationQueryDto
+  ) {
+    console.log(protocol);
+
     return this.coffeesService.findAll(paginationQueryDto);
   }
 
   @Get(':id')
-  getById(@Param('id') id: number) {
+  getById(@Param('id', ParseIntPipe) id: number) {
     return this.coffeesService.findById(id);
   }
 
